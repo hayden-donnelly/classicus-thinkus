@@ -1,0 +1,2 @@
+# Classicus-Thinkus
+Discord Bot
