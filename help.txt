@@ -1,0 +1,14 @@
+Parameters are separated by spaces, to input a parameter with spaces, wrap it in quotation marks: "<parameter>"
+
+**Embeds**
+?embed_simple <title> <body> <color> <image url>
+?embed_json <json>
+?embed_channel <channel>
+
+**Suggestions**
+?suggest <suggestion>
+?suggestion_channel <channel>
+?suggestion_color <color>
+
+**Definitions**
+?define <word>
