@@ -14,7 +14,13 @@ def cleanup_channel_id(channel_id):
     channel_id = channel_id.replace('>', '')
     channel_id = channel_id.replace('#', '')
     channel_id = int(channel_id)
-    return channel_id
+    return channel_id    
+
+def save_settings(settings):
+    settings.to_csv(os.path.abspath("../../settings.csv"), index=False)
+
+#column_names = ["Guild ID", "Embed Channel ID", "Embed Default Color", "Suggestion Channel ID", "Suggestion New Color", "Suggestion Accepted Color", "Suggestion Denied Color", "Suggestion Potential Color"]
+#df = pd.DataFrame(columns=column_names)
 
 # Settings
 prefix = "?"
@@ -31,10 +37,16 @@ discord_key = str(keys[keys['API'] == 'Discord']['Key'].values[0])
 mw_collegiate_key = str(keys[keys['API'] == 'MW Collegiate']['Key'].values[0])
 mw_medical_key = str(keys[keys['API'] == 'MW Medical']['Key'].values[0])
 
+settings = pd.read_csv(os.path.abspath("../../settings.csv", index=False))
+#df.read_csv(filename, index=False) 
+
+#new_row = {'name':'Geo', 'physics':87, 'chemistry':92, 'algebra':97}
+#df_marks = df_marks.append(new_row, ignore_index=True)
+#df.loc[20]['Embed Channel ID'] = 20
+
 @bot.event
 async def on_ready():
     print("Everything's all ready to go~")
-
 
 @bot.event
 async def on_message(message):
@@ -47,6 +59,18 @@ async def h(ctx):
     title = "Commands"
     embed = discord.Embed(title=title, description=help_text)
     await ctx.send(embed=embed)
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def init_guild(ctx):
+    global settings
+    settings = settings.append({'Guild ID':ctx.message.guild.id, 'Embed Channel ID':-1, 
+                                'Embed Default Color':readable_hex("000000"), 'Suggestion Channel ID':-1,
+                                'Suggestion New Color':readable_hex("000000"), 'Suggestion Accepted Color':readable_hex("000000"),
+                                'Suggestion Denied Color':readable_hex("000000"), 'Suggestion Potential Color':readable_hex("000000")}, 
+                                ignore_index=True)
+    settings = settings.set_index('Guild ID')
+    save_settings(settings)
 
 # Embeds
 @bot.command(pass_context=True)
