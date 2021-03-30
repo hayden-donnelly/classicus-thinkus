@@ -16,10 +16,8 @@ def cleanup_channel_id(channel_id):
     channel_id = int(channel_id)
     return channel_id    
 
-def save_settings(settings):
-    settings.to_csv(os.path.abspath("../../settings.csv"), index=False)
-
 #column_names = ["Guild ID", "Embed Channel ID", "Embed Default Color", "Suggestion Channel ID", "Suggestion New Color", "Suggestion Accepted Color", "Suggestion Denied Color", "Suggestion Potential Color"]
+#data = {"Guild ID":20, "Embed Channel ID":20, "Embed Default Color":20, "Suggestion Channel ID":20, "Suggestion New Color":20, "Suggestion Accepted Color":20, "Suggestion Denied Color":20, "Suggestion Potential Color":20}
 #df = pd.DataFrame(columns=column_names)
 
 # Settings
@@ -37,7 +35,8 @@ discord_key = str(keys[keys['API'] == 'Discord']['Key'].values[0])
 mw_collegiate_key = str(keys[keys['API'] == 'MW Collegiate']['Key'].values[0])
 mw_medical_key = str(keys[keys['API'] == 'MW Medical']['Key'].values[0])
 
-settings = pd.read_csv(os.path.abspath("../../settings.csv", index=False))
+settings = pd.read_csv(os.path.abspath("../../settings.csv"))
+settings = settings.set_index('Guild ID')
 #df.read_csv(filename, index=False) 
 
 #new_row = {'name':'Geo', 'physics':87, 'chemistry':92, 'algebra':97}
@@ -62,15 +61,28 @@ async def h(ctx):
 
 @bot.command(pass_context=True)
 @commands.has_role("Admin")
-async def init_guild(ctx):
+async def settings_init(ctx):
     global settings
-    settings = settings.append({'Guild ID':ctx.message.guild.id, 'Embed Channel ID':-1, 
-                                'Embed Default Color':readable_hex("000000"), 'Suggestion Channel ID':-1,
-                                'Suggestion New Color':readable_hex("000000"), 'Suggestion Accepted Color':readable_hex("000000"),
-                                'Suggestion Denied Color':readable_hex("000000"), 'Suggestion Potential Color':readable_hex("000000")}, 
-                                ignore_index=True)
-    settings = settings.set_index('Guild ID')
-    save_settings(settings)
+    guild_id = ctx.message.guild.id
+    if guild_id in settings.index:
+        await ctx.send("Settings have already been initialized for this guild.")
+    else:
+        settings = settings.append({'Guild ID':guild_id, 'Embed Channel ID':-1, 
+                                    'Embed Default Color':readable_hex("000000"), 'Suggestion Channel ID':-1,
+                                    'Suggestion New Color':readable_hex("000000"), 'Suggestion Accepted Color':readable_hex("000000"),
+                                    'Suggestion Denied Color':readable_hex("000000"), 'Suggestion Potential Color':readable_hex("000000")}, 
+                                    ignore_index=True)
+        settings = settings.set_index('Guild ID')
+        print(settings.head())
+        await ctx.send("Settings have been initialized.")
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def settings_save(ctx):
+    global settings
+    settings.to_csv(os.path.abspath("../../settings.csv"))
+    await ctx.send("Settings have been saved.")
+
 
 # Embeds
 @bot.command(pass_context=True)
