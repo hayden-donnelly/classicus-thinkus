@@ -8,7 +8,15 @@ Parameters are separated by spaces, to input a parameter with spaces, wrap it in
 **Suggestions**
 ?suggest <suggestion>
 ?suggestion_channel <channel>
-?suggestion_color <color>
+?suggestion_new_color <color>
+?suggestion_accepted_color <color>
+?suggestion_denied_color <color>
+?suggestion_potential_color <color>
 
 **Definitions**
 ?define <word>
+
+**Settings**
+?settings_init
+?settings_save
+?settings_display

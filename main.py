@@ -25,10 +25,6 @@ prefix = "?"
 bot = commands.Bot(command_prefix=prefix)
 help_text_file = open("help.txt")
 help_text = help_text_file.read()
-suggestion_channel_id = ""
-suggestion_color_hex = readable_hex("f3785d")
-embed_channel_id = 0
-embed_default_color_hex = readable_hex("000000")
 
 keys = pd.read_csv(os.path.abspath("../../api_keys.csv"))
 discord_key = str(keys[keys['API'] == 'Discord']['Key'].values[0])
@@ -37,11 +33,6 @@ mw_medical_key = str(keys[keys['API'] == 'MW Medical']['Key'].values[0])
 
 settings = pd.read_csv(os.path.abspath("../../settings.csv"))
 settings = settings.set_index('Guild ID')
-#df.read_csv(filename, index=False) 
-
-#new_row = {'name':'Geo', 'physics':87, 'chemistry':92, 'algebra':97}
-#df_marks = df_marks.append(new_row, ignore_index=True)
-#df.loc[20]['Embed Channel ID'] = 20
 
 @bot.event
 async def on_ready():
@@ -68,12 +59,11 @@ async def settings_init(ctx):
         await ctx.send("Settings have already been initialized for this guild.")
     else:
         settings = settings.append({'Guild ID':guild_id, 'Embed Channel ID':-1, 
-                                    'Embed Default Color':readable_hex("000000"), 'Suggestion Channel ID':-1,
-                                    'Suggestion New Color':readable_hex("000000"), 'Suggestion Accepted Color':readable_hex("000000"),
-                                    'Suggestion Denied Color':readable_hex("000000"), 'Suggestion Potential Color':readable_hex("000000")}, 
+                                    'Embed Default Color':"000000", 'Suggestion Channel ID':-1,
+                                    'Suggestion New Color':"000000", 'Suggestion Accepted Color':"000000",
+                                    'Suggestion Denied Color':"000000", 'Suggestion Potential Color':"000000"}, 
                                     ignore_index=True)
         settings = settings.set_index('Guild ID')
-        print(settings.head())
         await ctx.send("Settings have been initialized.")
 
 @bot.command(pass_context=True)
@@ -82,6 +72,13 @@ async def settings_save(ctx):
     global settings
     settings.to_csv(os.path.abspath("../../settings.csv"))
     await ctx.send("Settings have been saved.")
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def settings_display(ctx):
+    global settings
+    embed = discord.Embed(title='Guild Settings', description=str(settings.loc[ctx.message.guild.id]))
+    await ctx.send(embed=embed)
 
 
 # Embeds
@@ -103,16 +100,17 @@ async def embed_json(ctx):
 @commands.has_role("Admin")
 async def embed_channel(ctx, channel_id):
     channel_id = cleanup_channel_id(channel_id)
-    global embed_channel_id
-    embed_channel_id = channel_id
+    global settings
+    settings.loc[ctx.message.guild.id, 'Embed Channel ID'] = channel_id
     await ctx.send("Embed channel has been set to: " + str(channel_id))
 
 # Suggestions
 @bot.command(pass_context=True)
 async def suggest(ctx, suggestion):
-    channel = bot.get_channel(suggestion_channel_id)
-    embed = discord.Embed(title="New Suggestion", description=suggestion, color=suggestion_color_hex)
-    #embed.set_thumbnail(url=ctx.author.avatar_url)
+    global settings
+    channel = bot.get_channel(settings.loc[ctx.message.guild.id, 'Suggestion Channel ID'])
+    embed = discord.Embed(title="New Suggestion", description=suggestion, 
+                            color=readable_hex(settings.loc[ctx.message.guild.id, 'Suggestion New Color']))
     embed.set_author(name=ctx.author.name + " | " + str(ctx.author.id), icon_url=ctx.author.avatar_url)
     message = await channel.send(embed=embed)
     await message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
@@ -122,16 +120,37 @@ async def suggest(ctx, suggestion):
 @commands.has_role("Admin")
 async def suggestion_channel(ctx, channel_id):
     channel_id = cleanup_channel_id(channel_id)
-    global suggestion_channel_id
-    suggestion_channel_id = channel_id
+    global settings
+    settings.loc[ctx.message.guild.id, 'Suggestion Channel ID'] = channel_id
     await ctx.send("Suggestion channel has been set to: " + str(channel_id))
 
 @bot.command(pass_context=True)
 @commands.has_role("Admin")
-async def suggestion_color(ctx, color):
-    global suggestion_color_hex 
-    suggestion_color_hex = readable_hex(color)
-    await ctx.send("Suggestion color has been set to: " + color)
+async def suggestion_new_color(ctx, color):
+    global settings
+    settings.loc[ctx.message.guild.id, 'Suggestion New Color'] = str(color)
+    await ctx.send("Suggestion new color has been set to: " + color)
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def suggestion_accepted_color(ctx, color):
+    global settings
+    settings.loc[ctx.message.guild.id, 'Suggestion Accepted Color'] = str(color)
+    await ctx.send("Suggestion accepted color has been set to: " + color)
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def suggestion_denied_color(ctx, color):
+    global settings
+    settings.loc[ctx.message.guild.id, 'Suggestion Denied Color'] = str(color)
+    await ctx.send("Suggestion denied color has been set to: " + color)
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def suggestion_potential_color(ctx, color):
+    global settings
+    settings.loc[ctx.message.guild.id, 'Suggestion Potential Color'] = str(color)
+    await ctx.send("Suggestion potential color has been set to: " + color)
 
 # Dictionary
 @bot.command(pass_context=True)
