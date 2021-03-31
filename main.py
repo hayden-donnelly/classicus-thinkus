@@ -80,13 +80,13 @@ async def settings_display(ctx):
     embed = discord.Embed(title='Guild Settings', description=str(settings.loc[ctx.message.guild.id]))
     await ctx.send(embed=embed)
 
-
 # Embeds
 @bot.command(pass_context=True)
 @commands.has_role("Admin")
 async def embed_simple(ctx, title, body, color, image):
-    channel = bot.get_channel(embed_channel_id)
-    color = embed_default_color_hex if color == "" else readable_hex(color)
+    global settings
+    channel = bot.get_channel(settings.loc[ctx.message.guild.id, 'Embed Channel ID'])
+    color = readable_hex(settings.loc[ctx.message.guild.id, 'Embed Default Color']) if color == "" else readable_hex(color)
     embed = discord.Embed(title=title, description=body, color=color)
     embed.set_image(url=image)
     await channel.send(embed=embed)
@@ -98,11 +98,34 @@ async def embed_json(ctx):
 
 @bot.command(pass_context=True)
 @commands.has_role("Admin")
+async def embed_simple_edit(ctx, embed_id, title, body, color, image):
+    global settings
+    channel = bot.get_channel(settings.loc[ctx.message.guild.id, 'Embed Channel ID'])
+    color = readable_hex(settings.loc[ctx.message.guild.id, 'Embed Default Color']) if color == "" else readable_hex(color)
+    embed = discord.Embed(title=title, description=body, color=color)
+    embed.set_image(url=image)
+    original_embed = await channel.fetch_message(embed_id)
+    await original_embed.edit(embed=embed)
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def embed_json_edit(ctx):
+    await ctx.send("This command has not been setup yet.")
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
 async def embed_channel(ctx, channel_id):
     channel_id = cleanup_channel_id(channel_id)
     global settings
     settings.loc[ctx.message.guild.id, 'Embed Channel ID'] = channel_id
     await ctx.send("Embed channel has been set to: " + str(channel_id))
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def embed_default_color(ctx, color):
+    global settings
+    settings.loc[ctx.message.guild.id, 'Embed Default Color'] = str(color)
+    await ctx.send("Embed default color has been set to: " + color)
 
 # Suggestions
 @bot.command(pass_context=True)
@@ -115,6 +138,45 @@ async def suggest(ctx, suggestion):
     message = await channel.send(embed=embed)
     await message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
     await message.add_reaction("\N{CROSS MARK}")
+
+@bot.command(pass_context=True)
+async def suggestion_accept(ctx, suggestion_id, reason):
+    global settings
+    channel = bot.get_channel(settings.loc[ctx.message.guild.id, 'Suggestion Channel ID'])
+    message = await channel.fetch_message(suggestion_id)
+    old_embed = message.embeds[0]
+    new_embed = discord.Embed(title="Accepted Suggestion", description=old_embed.description, 
+                                color=readable_hex(settings.loc[ctx.message.guild.id, 'Suggestion Accepted Color']))
+    new_embed.set_author(name=old_embed.author.name, icon_url=old_embed.author.icon_url)
+    new_embed.add_field(name=ctx.author.name + "'s Reason", value=reason, inline=False)
+    await message.edit(embed=new_embed)
+    await ctx.send("Suggestion " + str(suggestion_id) + " has been accepted.")
+
+@bot.command(pass_context=True)
+async def suggestion_deny(ctx, suggestion_id, reason):
+    global settings
+    channel = bot.get_channel(settings.loc[ctx.message.guild.id, 'Suggestion Channel ID'])
+    message = await channel.fetch_message(suggestion_id)
+    old_embed = message.embeds[0]
+    new_embed = discord.Embed(title="Denied Suggestion", description=old_embed.description, 
+                                color=readable_hex(settings.loc[ctx.message.guild.id, 'Suggestion Denied Color']))
+    new_embed.set_author(name=old_embed.author.name, icon_url=old_embed.author.icon_url)
+    new_embed.add_field(name=ctx.author.name + "'s Reason", value=reason, inline=False)
+    await message.edit(embed=new_embed)
+    await ctx.send("Suggestion " + str(suggestion_id) + " has been denied.")
+
+@bot.command(pass_context=True)
+async def suggestion_maybe(ctx, suggestion_id, reason):
+    global settings
+    channel = bot.get_channel(settings.loc[ctx.message.guild.id, 'Suggestion Channel ID'])
+    message = await channel.fetch_message(suggestion_id)
+    old_embed = message.embeds[0]
+    new_embed = discord.Embed(title="Potential Suggestion", description=old_embed.description, 
+                                color=readable_hex(settings.loc[ctx.message.guild.id, 'Suggestion Potential Color']))
+    new_embed.set_author(name=old_embed.author.name, icon_url=old_embed.author.icon_url)
+    new_embed.add_field(name=ctx.author.name + "'s Reason", value=reason, inline=False)
+    await message.edit(embed=new_embed)
+    await ctx.send("Suggestion " + str(suggestion_id) + " is under review.")
 
 @bot.command(pass_context=True)
 @commands.has_role("Admin")

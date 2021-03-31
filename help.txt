@@ -3,10 +3,16 @@ Parameters are separated by spaces, to input a parameter with spaces, wrap it in
 **Embeds**
 ?embed_simple <title> <body> <color> <image url>
 ?embed_json <json>
+?embed_simple_edit <embed id> <title> <body> <color> <image url>
+?embed_json <embed id> <json>
 ?embed_channel <channel>
+?embed_default_color <color>
 
 **Suggestions**
 ?suggest <suggestion>
+?suggestion_accept <suggestion id> <reason>
+?suggestion_deny <suggestion id> <reason>
+>suggestion_maybe <suggestion id> <reason>
 ?suggestion_channel <channel>
 ?suggestion_new_color <color>
 ?suggestion_accepted_color <color>
