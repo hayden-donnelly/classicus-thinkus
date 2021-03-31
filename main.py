@@ -4,6 +4,7 @@ import urllib.request
 import pandas as pd
 import os
 from discord.ext import commands
+import time
 
 # Backend utility
 def readable_hex(color):
@@ -34,6 +35,8 @@ mw_medical_key = str(keys[keys['API'] == 'MW Medical']['Key'].values[0])
 settings = pd.read_csv(os.path.abspath("../../settings.csv"))
 settings = settings.set_index('Guild ID')
 
+start_time = time.time()
+
 @bot.event
 async def on_ready():
     print("Everything's all ready to go~")
@@ -49,6 +52,11 @@ async def h(ctx):
     title = "Commands"
     embed = discord.Embed(title=title, description=help_text)
     await ctx.send(embed=embed)
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def uptime(ctx):
+    await ctx.send("Uptime: " + str(int(time.time() - start_time)) + " seconds.")
 
 @bot.command(pass_context=True)
 @commands.has_role("Admin")
