@@ -17,10 +17,6 @@ def cleanup_channel_id(channel_id):
     channel_id = int(channel_id)
     return channel_id    
 
-#column_names = ["Guild ID", "Embed Channel ID", "Embed Default Color", "Suggestion Channel ID", "Suggestion New Color", "Suggestion Accepted Color", "Suggestion Denied Color", "Suggestion Potential Color"]
-#data = {"Guild ID":20, "Embed Channel ID":20, "Embed Default Color":20, "Suggestion Channel ID":20, "Suggestion New Color":20, "Suggestion Accepted Color":20, "Suggestion Denied Color":20, "Suggestion Potential Color":20}
-#df = pd.DataFrame(columns=column_names)
-
 # Settings
 prefix = "?"
 bot = commands.Bot(command_prefix=prefix)
