@@ -15,7 +15,8 @@ if __name__ == '__main__':
                             'cogs.embeds', 
                             'cogs.settings', 
                             'cogs.suggestions',
-                            'cogs.backend']
+                            'cogs.backend',
+                            'cogs.news']
 
     for extension in command_extensions:
         try:
