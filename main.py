@@ -228,5 +228,11 @@ async def define(ctx, word):
         embed.set_footer(text="Merriam-Webster Collegiate Dictionary")
         await ctx.send(embed=embed)
 
+initial_extensions = ['dictionary']
+
+if __name__ == '__main__':
+    for extension in initial_extensions:
+        bot.load_extension(extension)
+
 # Connect to Discord
 bot.run(discord_key)
