@@ -37,10 +37,10 @@ start_time = time.time()
 async def on_ready():
     print("Everything's all ready to go~")
 
-@bot.event
-async def on_message(message):
-    print("The message's content was", message.content)
-    await bot.process_commands(message)
+#@bot.event
+#async def on_message(message):
+#    print("The message's content was", message.content)
+#    await bot.process_commands(message)
 
 @bot.command(pass_context=True)
 @commands.has_role("Admin")
@@ -232,7 +232,10 @@ initial_extensions = ['dictionary']
 
 if __name__ == '__main__':
     for extension in initial_extensions:
-        bot.load_extension(extension)
+        try:
+            bot.load_extension(extension)
+        except (AttributeError, ImportError) as e:
+            print("Error\n")
 
 # Connect to Discord
 bot.run(discord_key)
