@@ -8,7 +8,7 @@ def init():
     global prefix, bot, help_text_file, help_text, keys, discord_key, mw_collegiate_key, mw_medical_key, settings, start_time
     prefix = "?"
     bot = commands.Bot(command_prefix=prefix)
-    help_text_file = open("help.txt")
+    help_text_file = open(os.path.abspath("data/help.txt"))
     help_text = help_text_file.read()
 
     keys = pd.read_csv(os.path.abspath("../../api_keys.csv"))
