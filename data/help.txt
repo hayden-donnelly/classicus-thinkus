@@ -27,6 +27,10 @@ Parameters are separated by spaces, to input a parameter with spaces, wrap it in
 ?settings_save
 ?settings_display
 
+**Merit System**
+?merit <user id>
+?demerit <user id>
+
 **Backend**
 ?h
 ?uptime
