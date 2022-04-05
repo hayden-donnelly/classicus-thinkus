@@ -6,3 +6,4 @@ Classicus Thinkus is a multipurpose discord bot.
 * Embeds
 * Merriam-Webster Collegiate Dictionary API integration
 * Merit point tracking system
+* Message Analytics
