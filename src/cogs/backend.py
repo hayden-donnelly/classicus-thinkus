@@ -3,7 +3,7 @@ from discord.ext import commands
 import time
 import global_vars as gv
 
-class Dictionary(commands.Cog):
+class Backend(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -20,4 +20,4 @@ class Dictionary(commands.Cog):
         await ctx.send("Uptime: " + str(int(time.time() - gv.start_time)) + " seconds.")
 
 def setup(bot):
-    bot.add_cog(Dictionary(bot))
+    bot.add_cog(Backend(bot))
